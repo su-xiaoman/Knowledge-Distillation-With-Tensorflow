@@ -1,0 +1,10 @@
+# directory
+.idea/
+.git/
+checkpoints/
+__pycache__/
+utils/__pycache__/
+
+#file
+test.py
+README_with_Q.md

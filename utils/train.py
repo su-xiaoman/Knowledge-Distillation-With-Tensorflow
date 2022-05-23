@@ -10,10 +10,13 @@ def train_step(train_db, model=None ):
     optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
     criterion = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
-    for step, (X, y) in enumerate(train_db):
+    for X, y in tqdm(train_db):
         with tf.GradientTape() as tape:
             logits = model(X, training=True)
             y_onehot = tf.one_hot(y, depth=10)
+
+            print(f"y_onehot:{y_onehot.shape}")
+
             loss = criterion(y_onehot, logits)
             # print(f"no mean, loss dim: {loss}, {loss.shape}")
             loss = tf.reduce_mean(loss)
@@ -22,15 +25,15 @@ def train_step(train_db, model=None ):
         grads = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
-        if step % 100 == 0:
-            print(f"step:{step},loss:{float(loss)}")
+        # if step % 100 == 0:
+        #     print(f"step:{step},loss:{float(loss)}")
 
 
 
 
 def test_step(test_db,model=None,total_num=0, total_correct=0):
     #对于测试集来说，只要一次测评结果就行
-    for x, y in test_db:
+    for x, y in tqdm(test_db):
         # with optimizers
         logits = model(x, training=False)
         # out = tf.reshape(out,[-1,512])

@@ -10,6 +10,8 @@ from utils.train import test_step
 from utils.create_dataset import create_dataset
 from tqdm import tqdm
 from utils.losses import distillation_loss_fn, student_loss_fn
+# from tensorflow.keras.application
+
 
 if __name__ == '__main__':
     #  define dataset
@@ -27,11 +29,12 @@ if __name__ == '__main__':
 
 
     # train from scratch
-    # for epoch in range(EPOCHS):
-    #     train_step(train_db, teacher_model)
-    #     test_step(test_db, teacher_model)
+    for epoch in range(EPOCHS):
+        train_step(train_db, student_model)
+        test_step(test_db, student_model)
     # teacher_model.save_weights(student_checkpoint_save_path)
 
+    assert 1>3
     if os.path.exists(teacher_checkpoint_save_path + '.index'):
         teacher_model.load_weights(teacher_checkpoint_save_path)
         print("teacher checkpoint load success!")
@@ -49,13 +52,15 @@ if __name__ == '__main__':
             with tf.GradientTape() as tape:
                 teacher_logits = teacher_model(data, training=False)
                 student_logits = student_model(data, training=True) #float32,(256,10)
- 
-                target = tf.one_hot(target, depth=10)
-
-                student_loss = student_loss_fn(student_logits, target)
                 distillation_loss = distillation_loss_fn(student_logits, teacher_logits)
 
+                target = tf.one_hot(target, depth=10)
+                student_loss = student_loss_fn(student_logits, target)
+
                 loss = alpha * student_loss + (1-alpha) * distillation_loss
+
+                # 此时的设定完完全全由教师模型和学生模型的相似度计算
+                # loss = distillation_loss
             # 反向传播
             grads = tape.gradient(loss, student_model.trainable_variables)
             #梯度更新

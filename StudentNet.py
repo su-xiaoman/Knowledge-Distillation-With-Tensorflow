@@ -16,8 +16,8 @@ class StudentNet(keras.Model):
         self.maxpool2 = layers.MaxPooling2D((2, 2))
         self.dropout2 = layers.Dropout(0.5)
 
-        # self.avgpool = layers.AveragePooling2D()
-        self.flatten = layers.Flatten(name="my_name_is_flatten")
+        self.avgpool = layers.GlobalAveragePooling2D()
+        # self.flatten = layers.Flatten(name="my_name_is_flatten")
         self.d1 = layers.Dense(40,activation="relu")
         # self.dropout2 = layers.Dropout(0.5)
 
@@ -25,13 +25,15 @@ class StudentNet(keras.Model):
         # self.activ1 = layers.Activation('softmax')
 
     def call(self, input, training=None):
+        # module1
         x = self.conv1(input)
         x = self.conv2(x)
         x = self.maxpool1(x)
         x = self.dropout1(x)
 
 
-        x = self.flatten(x)
+        x = self.avgpool(x)
+        print(f"x.shape:{x.shape}") #256,8,8,32
         # x = self.d1(x)
         # x = self.dropout2(x)
         output = self.d2(x)

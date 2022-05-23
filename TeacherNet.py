@@ -24,6 +24,7 @@ class TeacherNet(tf.keras.Model):
         self.dropout3 = layers.Dropout(0.5)
 
         self.flatten = layers.Flatten()
+        self.avgpool = layers.AveragePooling2D()
 
         self.d1 = layers.Dense(128, activation="relu")
         self.dropout4 = layers.Dropout(0.5)
@@ -45,7 +46,7 @@ class TeacherNet(tf.keras.Model):
         x = self.maxpool3(x)
         x = self.dropout3(x)
 
-        x = self.flatten(x)
+        x = self.avgpool(x)
 
         x = self.d1(x)
         x = self.dropout4(x)
